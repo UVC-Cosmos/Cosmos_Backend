@@ -1,14 +1,22 @@
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 
 import db from './models/index.js';
 
 import indexRouter from './routes/index.js';
 
+const corsOptions = {
+  origin: 'http://localhost:3000', // Vue 앱의 도메인
+  credentials: true // 자격 증명 허용
+};
+
 dotenv.config();
 
 const app = express();
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 db.sequelize.authenticate().then(() => {
   console.log('DB connection has been established successfully.');
