@@ -1,11 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import passport from './config/passport.js';
+import session from 'express-session';
 
 import db from './models/index.js';
 
 import indexRouter from './routes/index.js';
 
 dotenv.config();
+
 
 const app = express();
 app.use(express.json());
@@ -16,6 +19,18 @@ db.sequelize.authenticate().then(() => {
     console.log('DB connection has been established successfully');
   }).catch((err) => { console.error('db sync error', err); });
 }).catch((err) => { console.error('db connect fail!', err); });
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 60 * 60 * 1000, // 1 hour
+  }
+ }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', indexRouter);
 

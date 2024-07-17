@@ -13,7 +13,32 @@ const userDao = {
       throw err;
     }
   },
-
+  async userLogin(params) {
+    logger.info('userDao.userLogin', params);
+    try {
+      const selectedOne  = await User.findOne({
+        where:{ userId: params.userId }
+      });
+      logger.info('userDao.userLogin.findOne', selectedOne );
+      return selectedOne;
+    } catch(err) {
+      logger.error('userDao.userLogin.findOneError', err);
+      throw err;
+    }
+  },
+  async selectUser(params){
+    logger.info('userDao.selectUser', params);
+    try {
+      const selectOne = await User.findOne({
+        where: { userId: params.userId }
+      });
+      logger.info('userDao.selectUser.selectOne', selectOne);
+      return selectOne;
+    } catch(err) {
+      logger.error('userDao.selectUser.selectOneError', err);
+      throw err;
+    }
+  },
 
 }
 
