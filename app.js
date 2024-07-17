@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import passport from './config/passport.js';
 import session from 'express-session';
+import { connect } from './config/mqttClient.js';
+
 
 import db from './models/index.js';
 
@@ -19,6 +21,9 @@ db.sequelize.authenticate().then(() => {
     console.log('DB connection has been established successfully');
   }).catch((err) => { console.error('db sync error', err); });
 }).catch((err) => { console.error('db connect fail!', err); });
+
+// MQTT 서버에 연결
+connect();
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
