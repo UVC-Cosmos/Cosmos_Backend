@@ -8,9 +8,12 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
+<<<<<<< Updated upstream
     "axios": "^1.7.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+=======
+>>>>>>> Stashed changes
     "connect-redis": "^7.1.1",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
