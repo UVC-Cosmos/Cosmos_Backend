@@ -1,7 +1,7 @@
-import sequelize from "./connection.js";
-import User from "./user.js";
+import sequelize from './connection.js';
+import User from './user.js';
 
-const db = {}
+const db = {};
 
 db.sequelize = sequelize;
 

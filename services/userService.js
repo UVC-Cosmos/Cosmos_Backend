@@ -27,6 +27,21 @@ const userService = {
       logger.error('Error: userService.createUser.insert', err);
       throw err;
     }
+  },
+  async login(params){
+    logger.info('userService.login', params);
+    
+    try {
+    const user = await userDao.userLogin(params);
+
+    if(!user) {
+      const err = new Error('User not found');
+      return err;
+    }
+    }catch(err) {
+      logger.error('Error: userService.login.userLogin', err);
+      throw err;
+    }
   }
 }
 
