@@ -1,6 +1,7 @@
 import express from 'express';
 import logger from '../libs/logger.js';
 import userService from '../services/userService.js';
+import sendSlackNotification from '../services/slackService.js';
 
 const router = express.Router();
 
@@ -16,6 +17,11 @@ router.post('/', async (req, res) => {
     };
     const result = await userService.createUser(params);
     logger.info('routes.user.post.result', result);
+
+    //슬랙 알림 발송
+    const message = `새로운 회원이 가입했습니다. \n이름: ${params.userName}\n이메일: ${params.email}`;
+    sendSlackNotification(message);
+
     res.status(200).json(result);
   } catch (err) {
     logger.error('ERROR: routes.user.POST', err);
@@ -28,7 +34,6 @@ router.post('/', async (req, res) => {
     } else if (params.email === undefined) {
       res.status(400).json({ error: '유효하지 않은 이메일 입니다.' });
     }
-
     res.status(500).json(err);
   }
 });
