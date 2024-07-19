@@ -42,6 +42,18 @@ const userDao = {
       throw err;
     }
   },
+
+  async selectUserByEmail(params) {
+    logger.info('userDao.selectUserByEmail', params);
+    try {
+      const selectOne = await User.findOne({ where: { email: params.email } });
+      logger.info('userDao.selectUserByEmail.selectOne', selectOne);
+      return selectOne;
+    } catch (err) {
+      logger.error('userDao.selectUserByEmail.selectOneError', err);
+      throw err;
+    }
+  },
 };
 
 export default userDao;
