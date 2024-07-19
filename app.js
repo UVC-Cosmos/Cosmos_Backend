@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import passport from './config/passport.js';
 import session from 'express-session';
 import { connect } from './config/mqttClient.js';
+import initializeSocket from './config/socketConfig.js';
+import http from 'http';
+
 
 
 import db from './models/index.js';
@@ -13,6 +16,9 @@ dotenv.config();
 
 
 const app = express();
+const server = http.createServer(app);
+initializeSocket(server);
+
 app.use(express.json());
 
 db.sequelize.authenticate().then(() => {
@@ -41,7 +47,7 @@ app.use('/', indexRouter);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   try{
     console.log(`서버가 ${PORT}에서 실행 중 입니다.`)
   } catch(err){

@@ -24,7 +24,7 @@ const connect = () => {
 
   client.on('message', (topic, message) => {
     // 수신된 메시지 처리
-    console.log(`Received message: ${message.toString()} on topic: ${topic}`);
+    // console.log(`Received message: ${message.toString()} on topic: ${topic}`);
   });
 
   client.on('error', (err) => {
