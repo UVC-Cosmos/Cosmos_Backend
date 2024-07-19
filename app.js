@@ -7,12 +7,13 @@ import session from 'express-session';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 
-import db from './models/index.js';
 
-import indexRouter from './routes/index.js';
+import db from "./models/index.js";
+
+import indexRouter from "./routes/index.js";
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Vue 앱의 도메인
+  origin: "http://localhost:3000", // Vue 앱의 도메인
   credentials: true, // 자격 증명 허용
 };
 
@@ -27,6 +28,7 @@ app.use(bodyParser.json());
 db.sequelize
   .authenticate()
   .then(() => {
+
     console.log('DB connection has been established successfully.');
     db.sequelize
       .sync({ alter: true })
@@ -85,13 +87,14 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   try {
-    console.log(`서버가 http://localhost:${PORT} 에서 실행 중 입니다.`);
+    console.log(`서버가 ${PORT}에서 실행 중 입니다.`);
   } catch (err) {
-    console.error('서버가 정상적으로 실행이 되지 않습니다.', err);
+    console.error("서버가 정상적으로 실행이 되지 않습니다.", err);
   }
 });
 
