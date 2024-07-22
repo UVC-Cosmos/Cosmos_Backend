@@ -54,6 +54,20 @@ const userDao = {
       throw err;
     }
   },
+
+  async update(params) {
+    logger.info('userDao.update', params);
+    try {
+      const updated = await User.update(params, {
+        where: { userId: params.userId },
+      });
+      logger.info('userDao.update.updated', updated);
+      return updated;
+    } catch (err) {
+      logger.error('userDao.update.Error', err);
+      throw err;
+    }
+  },
 };
 
 export default userDao;

@@ -48,6 +48,33 @@ const userService = {
     }
   },
 
+  async updateUser(params) {
+    logger.info('userService.updateUser', params);
+
+    let newHashPassword = null;
+    let newParams = null;
+
+    if (params.password) {
+      try {
+        newHashPassword = await hashUtil.makeHashPassword(params.password);
+      } catch (err) {
+        logger.error('Error: userService.updateUser.newHashPassword', err);
+        throw err;
+      }
+      newParams = {
+        ...params,
+        password: newHashPassword,
+      };
+    }
+    try {
+      const updateUser = await userDao.update(newParams ? newParams : params);
+      return updateUser;
+    } catch (err) {
+      logger.error('Error: userService.updateUser.update', err);
+      throw err;
+    }
+  },
+
   async verificationEmail(params) {
     logger.info('userService.verificationEmail', params);
     try {
@@ -77,6 +104,19 @@ const userService = {
 
     const verificationEmailCode = checkVerifyToken(params.email, params.code);
     return Promise.resolve(verificationEmailCode);
+  },
+
+  async duplicateCheck(params) {
+    logger.info('userService.duplicateCheck', params);
+    try {
+      const user = await userDao.userLogin(params);
+      if (!user) {
+        return true;
+      } else return false;
+    } catch (err) {
+      logger.error('userService.duplicateCheckError', err);
+      throw err;
+    }
   },
 };
 

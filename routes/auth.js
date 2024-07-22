@@ -33,6 +33,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+// 로그아웃
 router.post('/logout', isAuthenticated, (req, res, next) => {
   req.logout((err) => {
     if (err) {
@@ -48,6 +49,7 @@ router.post('/logout', isAuthenticated, (req, res, next) => {
   });
 });
 
+// 이메일 인증
 router.post('/verify-email', async (req, res) => {
   console.log(req.body.email);
   try {
@@ -64,6 +66,7 @@ router.post('/verify-email', async (req, res) => {
   }
 });
 
+// 이메일 인증 코드 인증
 router.post('/verify-emailCode', async (req, res) => {
   try {
     const params = {
@@ -75,6 +78,23 @@ router.post('/verify-emailCode', async (req, res) => {
   } catch (err) {
     logger.error('auth.verify-emailCode error: ' + err.message);
     res.status(400).json(err.message);
+  }
+});
+
+// id 중복 체크
+router.post('/idDuplicateCheck', async (req, res) => {
+  try {
+    const params = {
+      userId: req.body.userId,
+    };
+    const result = await userService.duplicateCheck(params);
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error('auth.idDuplicateCheck.Error', err);
+    if (params.userId === '') {
+      res.status(400).json({ message: '아이디를 입력해주세요.' });
+    }
+    res.status(500).json(err);
   }
 });
 

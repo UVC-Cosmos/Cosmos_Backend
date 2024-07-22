@@ -38,4 +38,24 @@ router.post('/', async (req, res) => {
   }
 });
 
+// 회원정보수정
+router.put('/', async (req, res) => {
+  logger.info('router.user.put');
+
+  try {
+    const params = {
+      userId: req.body.userId,
+      password: req.body.password,
+      userName: req.body.userName,
+      email: req.body.email,
+    };
+
+    const result = await userService.updateUser(params);
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error('router.user.put.Error', err);
+    res.status(500).json(err);
+  }
+});
+
 export default router;
