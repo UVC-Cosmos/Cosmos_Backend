@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import passport from './config/passport.js';
 import session from 'express-session';
+import { connect } from './config/mqttClient.js';
+import initializeSocket from './config/socketConfig.js';
+import http from 'http';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 
@@ -12,13 +15,16 @@ import db from './models/index.js';
 import indexRouter from './routes/index.js';
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Vue 앱의 도메인
+  origin: 'http://localhost:5173', // Vue 앱의 도메인
   credentials: true, // 자격 증명 허용
 };
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+initializeSocket(server);
+
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,6 +46,10 @@ db.sequelize
   .catch((err) => {
     console.error('db connect fail!', err);
   });
+
+
+// MQTT 서버에 연결
+connect();
 
 // Redis 클라이언트
 const redisClient = createClient({
@@ -87,10 +97,11 @@ app.use('/', indexRouter);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   try {
     console.log(`서버가 ${PORT}에서 실행 중 입니다.`);
   } catch (err) {
+
     console.error('서버가 정상적으로 실행이 되지 않습니다.', err);
   }
 });
