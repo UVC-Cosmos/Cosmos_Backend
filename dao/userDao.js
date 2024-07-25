@@ -29,6 +29,17 @@ const userDao = {
     }
   },
 
+  async getAllUsers() {
+    logger.info('userDao.getAllUsers');
+    try {
+      const selectAll = await User.findAll();
+      return selectAll;
+    } catch (error) {
+      logger.error('userDao.getAllUsers.Error', error);
+      throw error;
+    }
+  },
+
   async selectUser(params) {
     logger.info('userDao.selectUser', params);
     try {
@@ -99,10 +110,10 @@ const userDao = {
     console.log('userDao.updateUserPassword', params);
 
     try {
-      const passwordUpdate = await User.update(params,{
+      await User.update(params,{
         where: { id: params.id },
       })
-      return passwordUpdate;
+      return true;
     } catch(error) {
       console.log('userDao.updateUserPassword.Error', error);
       throw error;

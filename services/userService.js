@@ -48,6 +48,19 @@ const userService = {
     }
   },
 
+  async getAllUsers() {
+    logger.info('userService.getAllUsers');
+
+    try {
+      const users = await userDao.getAllUsers();
+      console.log('userService.getAllUsers', users);
+      return users;
+    } catch (error) {
+      logger.error('userService.getAllUsers Error', error);
+      throw error;
+    }
+  },
+
   async updateUser(params) {
     logger.info('userService.updateUser', params);
 

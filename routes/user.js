@@ -2,6 +2,7 @@ import express from 'express';
 import logger from '../libs/logger.js';
 import userService from '../services/userService.js';
 import sendSlackNotification from '../services/slackService.js';
+import { isAuthenticated } from '../middlewares/index.js';
 
 const router = express.Router();
 
@@ -58,10 +59,26 @@ router.put('/', async (req, res) => {
   }
 });
 
+// 모든 회원 정보 조회
+router.get('/get-all-users', isAuthenticated, async(req, res) => {
+  logger.info('router.user.get-all-users');
+  console.log('req.session', req.session.id);
+  if(!req.session.id){
+    return res.status(401).json({ message: '로그인이 필요합니다.' });
+  }
+  try{
+    const result = await userService.getAllUsers();
+    res.status(200).json(result);
+  } catch (error) {
+    logger.error('router.user.get-all-users.Error', error);
+    res.status(500).json({ error: error.message });
+  }
+})
+
 router.get('/userinfo', async (req, res) => {
   logger.info('router.user.getUserInfo');
 
-  if (!req.session.userId) {
+  if (!req.session.id) {
     return res.status(401).json({ message: '로그인이 필요합니다.' });
   }
   try {
@@ -89,8 +106,11 @@ router.put('/existing-password-change', async(req, res) => {
       password: req.body.password,
     };
     const result = await userService.putUserPass(params);
-    console.log(result);
-    res.status(200)
+    if( result === true ){
+      res.status(200).json({ message: '비밀번호 변경 성공' });
+    } else {
+      res.status(400).json({ message: '비밀번호 변경 실패' });
+    }
   } catch (error) {
     logger.error('router.user.existing-password-change.Error', error);
     res.status(400)
