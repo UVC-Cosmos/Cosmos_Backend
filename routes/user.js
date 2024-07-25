@@ -79,10 +79,10 @@ router.get('/userinfo', async (req, res) => {
 });
 
 // 비밀번호 변경 엔드포인트
-router.put('/existing-password-change', async(req, res) => {
+router.put('/existing-password-change', async (req, res) => {
   logger.info('router.user.existing-password-change');
 
-  console.log('req.body',req.body);
+  console.log('req.body', req.body);
 
   try {
     const params = {
@@ -90,15 +90,15 @@ router.put('/existing-password-change', async(req, res) => {
       password: req.body.password,
     };
     const result = await userService.putUserPass(params);
-    if( result === true ){
+    if (result === true) {
       res.status(200).json({ message: '비밀번호 변경 성공' });
     } else {
       res.status(400).json({ message: '비밀번호 변경 실패' });
     }
   } catch (error) {
     logger.error('router.user.existing-password-change.Error', error);
-    res.status(400)
+    res.status(400);
   }
-})
+});
 
 export default router;

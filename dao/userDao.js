@@ -118,6 +118,23 @@ const userDao = {
       console.log('userDao.updateUserPassword.Error', error);
       throw error;
     }
+  },
+
+  async deleteUser(params) {
+
+    try {
+      const result = await User.destroy({
+        where: { id: params.id },
+      })
+      if(result === 1) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      logger.error('userDao.deleteUser.Error', error);
+      throw error;
+    }
   }
 };
 
