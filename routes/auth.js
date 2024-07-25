@@ -75,7 +75,7 @@ router.post('/verify-emailCode', async (req, res) => {
       code: req.body.code,
     };
     const result = await userService.verificationEmailCode(params);
-    if( result === true ){
+    if (result === true) {
       res.status(200).json({ message: '이메일 인증 성공' });
     } else {
       res.status(400).json({ message: '이메일 인증 실패' });
@@ -110,23 +110,23 @@ router.post('/password-check', async (req, res) => {
     const params = {
       id: req.body.id,
       password: req.body.password,
-    }
+    };
     const result = await userService.passwordCheck(params);
-    if ( result === true) {
-      console.log('기존의 비밀번호가 일치함'); 
+    if (result === true) {
+      console.log('기존의 비밀번호가 일치함');
       res.status(200).json({ message: '기존의 비밀번호가 일치합니다.' });
     } else {
       res.status(400).json({ message: '기존의 비밀번호가 일치하지 않습니다' });
     }
   } catch (error) {
     logger.error('auth.password-check.Error', error);
-    if(params.password === '') {
+    if (params.password === '') {
       res.status(400).json({ message: '비밀번호를 입력해주세요.' });
-    } else if(params.id === '') {
+    } else if (params.id === '') {
       res.status(400).json({ message: '다시 로그인 후 시도해주세요' });
     }
     res.status(500).json(error);
   }
-})
+});
 
 export default router;

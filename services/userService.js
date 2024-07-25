@@ -148,20 +148,19 @@ const userService = {
   async passwordCheck(params) {
     try {
       const user = await userDao.userPasswordCheck(params);
-      if(!user) {
+      if (!user) {
         throw new Error('기존의 비밀번호가 일치하지 않음');
       }
       // 패스워드 정상적으로 넘어오는거 확인 했고, 해쉬화된 패스워드와 비교해야함
-      const checkPasswordHash = await hashUtil.checkPasswordHash(params.password, user.password);
+      const checkPasswordHash = await hashUtil.checkPasswordHash(
+        params.password,
+        user.password
+      );
       return checkPasswordHash;
-
-    }catch (error) {
-        
-    }
+    } catch (error) {}
   },
 
   async putUserPass(params) {
-
     let newHashPassword = null;
 
     try {
@@ -181,7 +180,18 @@ const userService = {
       logger.error('userService.putUserPass Error', error);
       throw error;
     }
-  }
+  },
+
+  async deleteUser(params) {
+    console.log('userService.deleteUser', params);
+    try {
+      const deleteUser = await userDao.deleteUser(params);
+      return deleteUser;
+    } catch (error) {
+      logger.error('userService.deleteUser Error', error);
+      throw error;
+    }
+  },
 };
 
 export default userService;
