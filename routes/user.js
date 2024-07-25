@@ -43,7 +43,7 @@ router.put('/', async (req, res) => {
   logger.info('router.user.put');
 
   try {
-    const params = {
+    params = {
       userId: req.body.userId,
       password: req.body.password,
       userName: req.body.userName,
@@ -57,5 +57,58 @@ router.put('/', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+router.get('/userinfo', async (req, res) => {
+  logger.info('router.user.getUserInfo');
+
+  if (!req.session.userId) {
+    return res.status(401).json({ message: '로그인이 필요합니다.' });
+  }
+  try {
+    const params = {
+      userId: req.session.userId,
+    };
+    const result = await userService.getUserInfo(params);
+    console.log(result);
+    res.status(200).json(result);
+  } catch (error) {
+    logger.error('router.user.getUserInfo.Error', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 비밀번호 변경 엔드포인트
+router.put('/existing-password-change', async(req, res) => {
+  logger.info('router.user.existing-password-change');
+
+  console.log('req.body',req.body);
+
+  try {
+    const params = {
+      id: req.body.id,
+      password: req.body.password,
+    };
+    const result = await userService.putUserPass(params);
+    console.log(result);
+    res.status(200)
+  } catch (error) {
+    logger.error('router.user.existing-password-change.Error', error);
+    res.status(400)
+  }
+})
+
+//회원 탈퇴
+// router.delete('/', async(req, res) => {
+//   logger.info('router.user.delete');
+
+//   try {
+//     const params = {
+//       userId: req.user.id,
+//     }
+//     const result = await userService.deleteUser(params);
+//     res.status(200).json(result);
+
+//   }
+// });
 
 export default router;

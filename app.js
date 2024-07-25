@@ -84,7 +84,7 @@ app.use(
       secure: false, // 배포 환경에서는 secure 속성을 true로 설정하여 HTTPS를 통해서만 쿠키를 전송하도록 합니다.
       httpOnly: false, // JavaScript를 통해 쿠키에 접근하지 못하도록 설정하여 보안을 강화합니다.
       sameSite: 'strict', // CSRF 방지를 위해 SameSite 속성을 'strict'로 설정합니다.
-      maxAge: 1 * 60 * 60 * 1000, // 쿠키의 유효 기간을 24시간(1일)으로 설정합니다.
+      maxAge: 1 * 60 * 60 * 1000, // 쿠키의 유효 기간을 1시간으로 설정합니다.
     },
     unset: 'destroy',
   })

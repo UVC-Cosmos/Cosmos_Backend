@@ -118,6 +118,57 @@ const userService = {
       throw err;
     }
   },
+
+  async getUserInfo(params) {
+    try {
+      const user = await userDao.userInfo(params);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      logger.error('userService.getUserInfo Error', error);
+      throw error;
+    }
+  },
+
+  async passwordCheck(params) {
+    try {
+      const user = await userDao.userPasswordCheck(params);
+      if(!user) {
+        throw new Error('기존의 비밀번호가 일치하지 않음');
+      }
+      // 패스워드 정상적으로 넘어오는거 확인 했고, 해쉬화된 패스워드와 비교해야함
+      const checkPasswordHash = await hashUtil.checkPasswordHash(params.password, user.password);
+      return checkPasswordHash;
+
+    }catch (error) {
+        
+    }
+  },
+
+  async putUserPass(params) {
+
+    let newHashPassword = null;
+
+    try {
+      newHashPassword = await hashUtil.makeHashPassword(params.password);
+    } catch (error) {
+      logger.error('userService.putUserPass.makeHashPassword Error', error);
+      throw err;
+    }
+    const newParams = {
+      ...params,
+      password: newHashPassword,
+    };
+    try {
+      const updateUserPassword = await userDao.updateUserPassword(newParams);
+      return updateUserPassword;
+    } catch (error) {
+      logger.error('userService.putUserPass Error', error);
+      throw error;
+    }
+  }
 };
 
 export default userService;

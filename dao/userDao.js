@@ -68,6 +68,46 @@ const userDao = {
       throw err;
     }
   },
+
+  async userInfo(params) {
+    console.log(params);
+    try {
+      const user = await User.findOne({
+        where: { userId: params.userId },
+      });
+      console.log(user);
+      return user;
+    } catch (error) {
+      logger.error('userDao.userInfo.Error', error);
+      throw error;
+    }
+  },
+
+  async userPasswordCheck(params) {
+    console.log('userDao', params);
+    try {
+      const user = await User.findOne({
+        where: { id: params.id }
+      });
+      return user;
+    } catch (error) {
+      console.log('userDao.userPasswordCheck.Error', error);
+    }
+  },
+
+  async updateUserPassword(params) {
+    console.log('userDao.updateUserPassword', params);
+
+    try {
+      const passwordUpdate = await User.update(params,{
+        where: { id: params.id },
+      })
+      return passwordUpdate;
+    } catch(error) {
+      console.log('userDao.updateUserPassword.Error', error);
+      throw error;
+    }
+  }
 };
 
 export default userDao;
