@@ -59,22 +59,6 @@ router.put('/', async (req, res) => {
   }
 });
 
-// 모든 회원 정보 조회
-router.get('/get-all-users', isAuthenticated, async(req, res) => {
-  logger.info('router.user.get-all-users');
-  console.log('req.session', req.session.id);
-  if(!req.session.id){
-    return res.status(401).json({ message: '로그인이 필요합니다.' });
-  }
-  try{
-    const result = await userService.getAllUsers();
-    res.status(200).json(result);
-  } catch (error) {
-    logger.error('router.user.get-all-users.Error', error);
-    res.status(500).json({ error: error.message });
-  }
-})
-
 router.get('/userinfo', async (req, res) => {
   logger.info('router.user.getUserInfo');
 
@@ -116,19 +100,5 @@ router.put('/existing-password-change', async(req, res) => {
     res.status(400)
   }
 })
-
-//회원 탈퇴
-// router.delete('/', async(req, res) => {
-//   logger.info('router.user.delete');
-
-//   try {
-//     const params = {
-//       userId: req.user.id,
-//     }
-//     const result = await userService.deleteUser(params);
-//     res.status(200).json(result);
-
-//   }
-// });
 
 export default router;
