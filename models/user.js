@@ -1,24 +1,24 @@
-import { Sequelize } from 'sequelize';
+import Sequelize from 'sequelize';
 
 class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
         userId: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: true,
         },
         password: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(500),
           allowNull: false,
         },
         userName: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
         },
         email: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: true,
           validate: {
@@ -26,7 +26,7 @@ class User extends Sequelize.Model {
           },
         },
         role: {
-          type: Sequelize.ENUM('Admin', 'Operator', 'User'),
+          type: Sequelize.ENUM('Admin', 'factoryAdmin', 'Operator', 'User'),
           defaultValue: 'User',
         },
       },
@@ -37,6 +37,9 @@ class User extends Sequelize.Model {
         paranoid: true, // deletedAt
       }
     );
+  }
+  static associate(models) {
+    User.belongsToMany(models.Factory, { through: models.UserFactory });
   }
 }
 
