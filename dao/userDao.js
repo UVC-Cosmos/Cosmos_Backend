@@ -98,7 +98,7 @@ const userDao = {
     console.log('userDao', params);
     try {
       const user = await User.findOne({
-        where: { id: params.id }
+        where: { id: params.id },
       });
       return user;
     } catch (error) {
@@ -110,23 +110,22 @@ const userDao = {
     console.log('userDao.updateUserPassword', params);
 
     try {
-      await User.update(params,{
+      await User.update(params, {
         where: { id: params.id },
-      })
+      });
       return true;
-    } catch(error) {
+    } catch (error) {
       console.log('userDao.updateUserPassword.Error', error);
       throw error;
     }
   },
 
   async deleteUser(params) {
-
     try {
       const result = await User.destroy({
         where: { id: params.id },
-      })
-      if(result === 1) {
+      });
+      if (result === 1) {
         return true;
       } else {
         return false;
@@ -135,7 +134,7 @@ const userDao = {
       logger.error('userDao.deleteUser.Error', error);
       throw error;
     }
-  }
+  },
 };
 
 export default userDao;
