@@ -12,12 +12,18 @@ db.sequelize = sequelize;
 db.User = User;
 db.Factory = Factory;
 db.UserFactory = UserFactory; // UserFactory 추가
+db.Line = Line;
+db.UserLinePermission = UserLinePermission;
 
 User.init(sequelize);
 Factory.init(sequelize);
 UserFactory.init(sequelize);
+Line.init(sequelize);
+UserLinePermission.init(sequelize);
 
 User.associate(db);
 Factory.associate(db);
+Line.associate(db);
+// UserLinePermission.associate(db);
 
 export default db;

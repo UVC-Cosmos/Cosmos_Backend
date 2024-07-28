@@ -1,34 +1,16 @@
 import { Sequelize } from 'sequelize';
+import { toDefaultValue } from 'sequelize/lib/utils';
 
 class UserLinePermission extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        userId: {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'User',
-            key: 'id',
-          },
-        },
-        lineId: {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Line',
-            key: 'id',
-          },
-        },
-        canControl: {
-          type: Sequelize.BOOLEAN,
-          defaultValue: false,
-        },
+        canControl: Sequelize.BOOLEAN,
       },
       {
         sequelize,
         modelName: 'UserLinePermission',
-        underscored: true,
         timestamps: true,
-        paranoid: true,
       }
     );
   }

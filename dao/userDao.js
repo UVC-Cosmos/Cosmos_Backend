@@ -2,6 +2,8 @@ import User from '../models/user.js';
 import UserFactory from '../models/userFactory.js';
 import logger from '../libs/logger.js';
 import Factory from '../models/factory.js';
+import UserLinePermission from '../models/userLinePermission.js';
+import Line from '../models/line.js';
 
 const userDao = {
   async insert(params) {
@@ -83,12 +85,10 @@ const userDao = {
   },
 
   async userInfo(params) {
-    console.log(params);
     try {
       const user = await User.findOne({
-        where: { userId: params.userId },
+        where: { id: params.userId },
       });
-      console.log(user);
       return user;
     } catch (error) {
       logger.error('userDao.userInfo.Error', error);
@@ -169,9 +169,10 @@ const userDao = {
 
   async getUserById(params) {
     try {
-      const user = await User.findOne({
-        where: { id: params.id },
+      const user = await UserFactory.findAll({
+        where: { userId: params.id },
       });
+      console.log('userDao.getUserById', user.length);
       return user;
     } catch (error) {
       logger.error('userDao.getUserById.Error', error);
@@ -193,6 +194,51 @@ const userDao = {
         },
       ],
     });
+  },
+
+  // 기존의 제어 권한 삭제
+  async removeUserLineControl(params) {
+    try {
+      // 해당 공장 (1공장이면 1공장, 2공장이면 ~~~)의 모든 라인 ID 가져옴
+      const lines = await Line.findAll({
+        where: { factoryId: params.factoryId },
+      });
+
+      // lines ID 목록 생성
+      const lineIds = lines.map((line) => line.id);
+
+      await UserLinePermission.destroy({
+        where: { userId: params.id, lineId: lineIds },
+      });
+    } catch (error) {
+      logger.error('userDao.removeUserLineControl.Error', error);
+      throw error;
+    }
+  },
+
+  // 제어 권한 추가
+  async addUserLinePermission(params) {
+    console.log('addUserLinePermission', params);
+    try {
+      const lines = await Line.findAll({
+        where: { name: params.lines, factoryId: params.factoryId },
+      });
+      console.log('lines', lines);
+      // lines ID 목록 생성
+      const permission = lines.map((line) => ({
+        canControl: true,
+        userId: params.id,
+        lineId: line.id,
+      }));
+      console.log('permission', permission);
+
+      // UserLinePermissions 테이블에 데이터 삽입
+      await UserLinePermission.bulkCreate(permission);
+      console.log('Permissions added successfully');
+    } catch (error) {
+      logger.error('userDao.addUserLinePermission.Error', error);
+      throw error;
+    }
   },
 };
 

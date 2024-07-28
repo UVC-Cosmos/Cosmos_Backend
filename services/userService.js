@@ -236,7 +236,7 @@ const userService = {
   },
 
   async getFactoryUsers(factoryId) {
-    console.log('userService.getFactoryUsers', factoryId);
+    logger.info('userService.getFactoryUsers', factoryId);
     try {
       const result = await userDao.getFactoryUsers(factoryId);
       return result;
@@ -244,6 +244,64 @@ const userService = {
       logger.error('userService.getFactoryUsers Error', error);
       throw error;
     }
+  },
+
+  async updateUserLineControl(params) {
+    logger.info('userService.updateUserLineControl', params);
+    // params { id: '2', userId: 1, lines: [ '2', '3' ] }
+
+    // 유효성 검사 id, lines, userId가 존재하는지 배열 비어있는지 확인
+    if (
+      !params.id ||
+      !Array.isArray(params.lines) ||
+      params.lines.length === 0
+    ) {
+      return { success: false, message: '잘못된 요청입니다.' };
+    }
+
+    try {
+      // userId(factoryAdmin)을 통한 admin의 소속 공장 확인
+      const user = await userDao.userInfo(params);
+
+      // 권한 검사 : 사용자 존재하는지, role이 factoryAdmin을 포함하고 있는지 확인
+      if (!user || !user.role.includes('factoryAdmin')) {
+        return { success: false, message: '권한이 없습니다.' };
+      }
+
+      // 역할에 따른 공자 ID 확인 :  사용자의 role에 따라서 관라히는 공장 ID 가져옴
+      const factoryId = this.getFactoryIdByRole(user.role);
+
+      // 유효한 공장 ID인지 확인 : 역할이 유효하지 않다면, 에러 메세지 반환
+      if (!factoryId) {
+        return { success: false, message: '유효하지 않은 역할 입니다.' };
+      }
+
+      const newParams = {
+        id: params.id,
+        lines: params.lines,
+        factoryId: factoryId,
+      };
+
+      // 기존 사용자의 line 정보 초기화 (해당 공장에 대한)
+      await userDao.removeUserLineControl(newParams);
+      // 새로운 line제어 권한 추가: 지정된 라인에 대한 권한 추가
+      await userDao.addUserLinePermission(newParams);
+
+      return { success: true, message: '변경 성공' };
+    } catch (error) {
+      logger.error('userService.updateUserLineControl Error', error);
+      throw error;
+    }
+  },
+
+  getFactoryIdByRole(role) {
+    const roleFactoryMap = {
+      'A-factoryAdmin': 1,
+      'B-factoryAdmin': 2,
+      'C-factoryAdmin': 3,
+    };
+
+    return roleFactoryMap[role] || null;
   },
 };
 
