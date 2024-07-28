@@ -28,7 +28,7 @@ class Line extends Sequelize.Model {
 
   static associate(models) {
     this.belongsTo(models.Factory, { foreignKey: 'factoryId' });
-    this.belongsToMany(models.User, { through: models.UserLinePermission });
+    // this.belongsToMany(models.User, { through: models.UserLinePermission });
   }
 }
 

@@ -1,3 +1,4 @@
+// userFactory.js
 import { Sequelize } from 'sequelize';
 
 class UserFactory extends Sequelize.Model {
@@ -6,15 +7,17 @@ class UserFactory extends Sequelize.Model {
       {
         userId: {
           type: Sequelize.INTEGER,
+          allowNull: false,
           references: {
-            model: 'User',
+            model: 'Users', // 참조하는 모델 이름
             key: 'id',
           },
         },
         factoryId: {
           type: Sequelize.INTEGER,
+          allowNull: false,
           references: {
-            model: 'Factory',
+            model: 'Factories', // 참조하는 모델 이름
             key: 'id',
           },
         },
@@ -22,9 +25,8 @@ class UserFactory extends Sequelize.Model {
       {
         sequelize,
         modelName: 'UserFactory',
-        underscored: true,
-        timestamps: true,
-        paranoid: true,
+        tableName: 'user_factories',
+        timestamps: false, // 타임스탬프가 필요하지 않다면 false로 설정
       }
     );
   }

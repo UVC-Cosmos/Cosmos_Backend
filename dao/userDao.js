@@ -1,5 +1,7 @@
 import User from '../models/user.js';
+import UserFactory from '../models/userFactory.js';
 import logger from '../libs/logger.js';
+import Factory from '../models/factory.js';
 
 const userDao = {
   async insert(params) {
@@ -134,6 +136,63 @@ const userDao = {
       logger.error('userDao.deleteUser.Error', error);
       throw error;
     }
+  },
+
+  async removeUserFactories(params) {
+    try {
+      const result = await UserFactory.destroy({
+        where: { userId: params.id },
+      });
+      return result;
+    } catch (error) {
+      logger.error('userDao.removeUserFactories.Error', error);
+      throw error;
+    }
+  },
+
+  async addUserFactories(params) {
+    const userFactories = params.factoryIds.map((factoryId) => ({
+      userId: params.id,
+      factoryId,
+    }));
+
+    // [ { userId: 1, factoryId: 1 }, { userId: 1, factoryId: 2 } ]
+    try {
+      await UserFactory.bulkCreate(userFactories);
+      console.log('Data inserted successfully.');
+      return true;
+    } catch (error) {
+      console.error('Error during bulkCreate:', error);
+      return false;
+    }
+  },
+
+  async getUserById(params) {
+    try {
+      const user = await User.findOne({
+        where: { id: params.id },
+      });
+      return user;
+    } catch (error) {
+      logger.error('userDao.getUserById.Error', error);
+      throw error;
+    }
+  },
+
+  async getFactoryUsers(factoryId) {
+    console.log('userDao.getFactoryUsers', factoryId);
+    return await User.findAll({
+      include: [
+        {
+          model: Factory,
+          where: { id: factoryId },
+          through: {
+            model: UserFactory,
+            attributes: [],
+          },
+        },
+      ],
+    });
   },
 };
 

@@ -4,6 +4,7 @@ import hashUtil from '../libs/hashUtil.js';
 import sendVerificationEmail from '../services/emailService.js';
 import { setVerifyToken, checkVerifyToken } from '../config/redis.js';
 import crypto from 'crypto';
+import factoryDao from '../dao/factoryDao.js';
 
 const userService = {
   async createUser(params) {
@@ -189,6 +190,58 @@ const userService = {
       return deleteUser;
     } catch (error) {
       logger.error('userService.deleteUser Error', error);
+      throw error;
+    }
+  },
+
+  async updateUserFactory(params) {
+    logger.info('userService.updateUserFactory', params);
+
+    try {
+      // 1. 사용자가 존재하는지 확인
+      const user = await userDao.getUserById(params);
+      if (!user) {
+        return { success: false, message: '사용자가 존재하지 않습니다.' };
+      }
+
+      // 2. 기존에 사용자가 소속된 공장 정보 초기화
+      await userDao.removeUserFactories(params);
+
+      // 3. 공장 이름으로 공장 ID 조회
+      const getFactoriesId = await factoryDao.getFactoryIdByName(params);
+      const newParams = {
+        id: params.id,
+        factoryIds: getFactoriesId,
+      };
+
+      // 3. 사용자의 새로운 공장 연결 추가
+      const addUserFactories = await userDao.addUserFactories(newParams);
+      console.log('addUserFactories', addUserFactories);
+      return addUserFactories;
+    } catch (error) {
+      logger.error('userService.updateUserFactory Error', error);
+      throw error;
+    }
+  },
+
+  // test factories 불러오기
+  async getAllFactories() {
+    try {
+      const result = await factoryDao.getAllFactories();
+      return result;
+    } catch (error) {
+      logger.error('userService.getAllFactories Error', error);
+      throw error;
+    }
+  },
+
+  async getFactoryUsers(factoryId) {
+    console.log('userService.getFactoryUsers', factoryId);
+    try {
+      const result = await userDao.getFactoryUsers(factoryId);
+      return result;
+    } catch (error) {
+      logger.error('userService.getFactoryUsers Error', error);
       throw error;
     }
   },

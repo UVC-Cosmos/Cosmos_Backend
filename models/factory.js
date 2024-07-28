@@ -7,6 +7,7 @@ class Factory extends Sequelize.Model {
         name: {
           type: Sequelize.STRING(100),
           allowNull: false,
+          unique: true,
         },
       },
       {
@@ -14,15 +15,18 @@ class Factory extends Sequelize.Model {
         modelName: 'Factory',
         tableName: 'factories', // 명시적으로 테이블 이름 설정
         underscored: true,
-        timestamps: true,
+        timestamps: false,
         paranoid: true,
       }
     );
   }
 
   static associate(models) {
-    this.belongsToMany(models.User, { through: models.UserFactory });
-    this.hasMany(models.Line, { foreignKey: 'factoryId' });
+    this.belongsToMany(models.User, {
+      through: models.UserFactory,
+      foreignKey: 'factoryId',
+      otherKey: 'userId',
+    });
   }
 }
 
