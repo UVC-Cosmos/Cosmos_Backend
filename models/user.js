@@ -50,6 +50,10 @@ class User extends Sequelize.Model {
       foreignKey: 'userId',
       otherKey: 'factoryId',
     });
+    this.belongsToMany(models.Line, {
+      through: models.UserLinePermission,
+      foreignKey: 'userId',
+    });
   }
 }
 

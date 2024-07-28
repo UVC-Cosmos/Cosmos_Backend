@@ -67,7 +67,7 @@ router.get('/userinfo', async (req, res) => {
   }
   try {
     const params = {
-      userId: req.session.userId,
+      userId: req.user.id,
     };
     const result = await userService.getUserInfo(params);
     console.log(result);

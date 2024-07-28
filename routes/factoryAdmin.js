@@ -22,4 +22,25 @@ router.get(
   }
 );
 
+// 공장 별 사용자 제어 권한 변경
+router.put('/user-line-control/:id', isAuthenticated, async (req, res) => {
+  try {
+    const params = {
+      id: req.params.id, // 변경할 사용자 id
+      userId: req.user.id, // 요청한 admin의 id => 어느 factory의 admin인지 확인하기 위함
+      lines: req.body.lines, // line id 배열 [ "1호기", "2호기" ]
+    };
+    const result = await userService.updateUserLineControl(params);
+    console.log('result', result);
+    if (result === true) {
+      res.status(200).json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (error) {
+    logger.error('factoryAdmin.userLineControl.Error', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

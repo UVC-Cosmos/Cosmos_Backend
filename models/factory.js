@@ -27,6 +27,7 @@ class Factory extends Sequelize.Model {
       foreignKey: 'factoryId',
       otherKey: 'userId',
     });
+    this.hasMany(models.Line, { foreignKey: 'factoryId' });
   }
 }
 
