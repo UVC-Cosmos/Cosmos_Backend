@@ -26,7 +26,13 @@ class User extends Sequelize.Model {
           },
         },
         role: {
-          type: Sequelize.ENUM('Admin', 'factoryAdmin', 'Operator', 'User'),
+          type: Sequelize.ENUM(
+            'Admin',
+            'A-factoryAdmin',
+            'B-factoryAdmin',
+            'C-factoryAdmin',
+            'User'
+          ),
           defaultValue: 'User',
         },
       },
@@ -39,7 +45,11 @@ class User extends Sequelize.Model {
     );
   }
   static associate(models) {
-    User.belongsToMany(models.Factory, { through: models.UserFactory });
+    this.belongsToMany(models.Factory, {
+      through: models.UserFactory,
+      foreignKey: 'userId',
+      otherKey: 'factoryId',
+    });
   }
 }
 
