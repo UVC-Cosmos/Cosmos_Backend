@@ -25,7 +25,6 @@ const userService = {
     };
     try {
       const insert = await userDao.insert(newParams);
-      logger.info('userService.createUser.insert', insert);
       return insert;
     } catch (err) {
       logger.error('Error: userService.createUser.insert', err);
@@ -216,7 +215,9 @@ const userService = {
 
       // 3. 사용자의 새로운 공장 연결 추가
       const addUserFactories = await userDao.addUserFactories(newParams);
-      console.log('addUserFactories', addUserFactories);
+      if (!addUserFactories) {
+        console.log('addUserFactories', addUserFactories.dataValues);
+      }
       return addUserFactories;
     } catch (error) {
       logger.error('userService.updateUserFactory Error', error);
