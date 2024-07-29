@@ -251,11 +251,7 @@ const userService = {
     // params { id: '2', userId: 1, lines: [ '2', '3' ] }
 
     // 유효성 검사 id, lines, userId가 존재하는지 배열 비어있는지 확인
-    if (
-      !params.id ||
-      !Array.isArray(params.lines) ||
-      params.lines.length === 0
-    ) {
+    if (!params.id) {
       return { success: false, message: '잘못된 요청입니다.' };
     }
 
@@ -268,7 +264,7 @@ const userService = {
         return { success: false, message: '권한이 없습니다.' };
       }
 
-      // 역할에 따른 공자 ID 확인 :  사용자의 role에 따라서 관라히는 공장 ID 가져옴
+      // 역할에 따른 공장 ID 확인 :  사용자의 role에 따라서 관라히는 공장 ID 가져옴
       const factoryId = this.getFactoryIdByRole(user.role);
 
       // 유효한 공장 ID인지 확인 : 역할이 유효하지 않다면, 에러 메세지 반환
@@ -287,7 +283,7 @@ const userService = {
       // 새로운 line제어 권한 추가: 지정된 라인에 대한 권한 추가
       await userDao.addUserLinePermission(newParams);
 
-      return { success: true, message: '변경 성공' };
+      return true;
     } catch (error) {
       logger.error('userService.updateUserLineControl Error', error);
       throw error;
