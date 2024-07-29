@@ -53,7 +53,6 @@ const userService = {
 
     try {
       const users = await userDao.getAllUsers();
-      console.log('userService.getAllUsers', users);
       return users;
     } catch (error) {
       logger.error('userService.getAllUsers Error', error);
