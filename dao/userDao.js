@@ -218,6 +218,14 @@ const userDao = {
             attributes: [],
           },
         },
+        {
+          model: Line,
+          as: 'Lines',
+          attributes: ['id', 'name'],
+          through: {
+            attributes: [],
+          },
+        },
       ],
     });
   },
