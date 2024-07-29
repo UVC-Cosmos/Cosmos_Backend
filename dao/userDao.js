@@ -53,6 +53,9 @@ const userDao = {
     logger.info('userDao.getAllUsers');
     try {
       const selectAll = await User.findAll({
+        where: {
+          role: 'User',
+        },
         include: [
           {
             model: Factory,
@@ -209,6 +212,9 @@ const userDao = {
   async getFactoryUsers(factoryId) {
     console.log('userDao.getFactoryUsers', factoryId);
     return await User.findAll({
+      where: {
+        role: 'User',
+      },
       include: [
         {
           model: Factory,
