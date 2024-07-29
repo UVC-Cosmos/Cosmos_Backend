@@ -27,7 +27,8 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  console.log('Serializing user with ID:', user); // 로그 추가
+  // console.log('Serializing user with ID:', user.dataValues); // 로그 추가
+  // logger.info('Serializing user with ID:', user); // 로그 추가
   done(null, user.userId);
 });
 

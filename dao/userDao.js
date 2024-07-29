@@ -7,11 +7,9 @@ import Line from '../models/line.js';
 
 const userDao = {
   async insert(params) {
-    console.log('userDao params: ', params);
     logger.info('userDao insert:' + params);
     try {
       const inserted = await User.create(params);
-      logger.info('Inserted user: ', inserted);
       return inserted;
     } catch (err) {
       logger.error('Error! userDao insert error', err);
@@ -24,8 +22,26 @@ const userDao = {
     try {
       const selectedOne = await User.findOne({
         where: { userId: params.userId },
+        include: [
+          {
+            model: Factory,
+            as: 'Factories',
+            attributes: ['id', 'name'],
+            through: {
+              attributes: [],
+            },
+          },
+          {
+            model: Line,
+            as: 'Lines',
+            attributes: ['id', 'name'],
+            through: {
+              attributes: [],
+            },
+          },
+        ],
       });
-      logger.info('userDao.userLogin.findOne', selectedOne);
+      // logger.info('userDao.userLogin.findOne', selectedOne);
       return selectedOne;
     } catch (err) {
       logger.error('userDao.userLogin.findOneError', err);
@@ -60,7 +76,7 @@ const userDao = {
       const selectOne = await User.findOne({
         where: { userId: params.userId },
       });
-      logger.info('userDao.selectUser.selectOne', selectOne);
+      // logger.info('userDao.selectUser.selectOne', selectOne);
       return selectOne;
     } catch (err) {
       logger.error('userDao.selectUser.selectOneError', err);
@@ -160,13 +176,13 @@ const userDao = {
     }
   },
 
-  async addUserFactories(params) {
+  async addUseusrFactories(params) {
     const userFactories = params.factoryIds.map((factoryId) => ({
       userId: params.id,
       factoryId,
     }));
 
-    // [ { userId: 1, factoryId: 1 }, { userId: 1, factoryId: 2 } ]
+    // [ { userId: 1, factoryId: 1 }, { erId: 1, factoryId: 2 } ]
     try {
       await UserFactory.bulkCreate(userFactories);
       console.log('Data inserted successfully.');
