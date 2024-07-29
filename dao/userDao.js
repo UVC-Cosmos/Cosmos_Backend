@@ -36,7 +36,17 @@ const userDao = {
   async getAllUsers() {
     logger.info('userDao.getAllUsers');
     try {
-      const selectAll = await User.findAll();
+      const selectAll = await User.findAll({
+        include: [
+          {
+            model: Factory,
+            through: {
+              model: UserFactory,
+              attributes: [],
+            },
+          },
+        ],
+      });
       return selectAll;
     } catch (error) {
       logger.error('userDao.getAllUsers.Error', error);

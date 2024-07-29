@@ -35,6 +35,11 @@ class User extends Sequelize.Model {
           ),
           defaultValue: 'User',
         },
+        rank: {
+          type: Sequelize.ENUM('사원', '대리', '과장', '부장'),
+          allowNull: false,
+          defaultValue: '사원',
+        },
       },
       {
         sequelize,

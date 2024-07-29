@@ -6,7 +6,7 @@ import { isAdmin, isAuthenticated } from '../middlewares/index.js';
 const router = express.Router();
 
 // 모든 회원 정보 조회
-router.get('/get-all-users', isAuthenticated, async (req, res) => {
+router.get('/get-all-users', isAuthenticated, isAdmin, async (req, res) => {
   logger.info('router.admin.get-all-users');
 
   if (!req.session.id) {
@@ -22,29 +22,34 @@ router.get('/get-all-users', isAuthenticated, async (req, res) => {
 });
 
 // 관리자 회원 삭제
-router.delete('/delete-user/:id', isAuthenticated, async (req, res) => {
-  logger.info('router.admin.delete-user');
+router.delete(
+  '/delete-user/:id',
+  isAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    logger.info('router.admin.delete-user');
 
-  if (!req.session.id) {
-    return res.status(401).json({ message: '로그인이 필요합니다.' });
-  }
-  console.log('req.params', req.params.id);
-
-  try {
-    const params = {
-      id: req.params.id,
-    };
-    const result = await userService.deleteUser(params);
-    if (result === true) {
-      res.status(200).json({ message: '회원 삭제 성공' });
-    } else {
-      res.status(400).json({ message: '삭제할 회원이 없습니다.' });
+    if (!req.session.id) {
+      return res.status(401).json({ message: '로그인이 필요합니다.' });
     }
-  } catch (error) {
-    logger.error('router.user.delete-user.Error', error);
-    res.status(500).json({ error: error.message });
+    console.log('req.params', req.params.id);
+
+    try {
+      const params = {
+        id: req.params.id,
+      };
+      const result = await userService.deleteUser(params);
+      if (result === true) {
+        res.status(200).json({ message: '회원 삭제 성공' });
+      } else {
+        res.status(400).json({ message: '삭제할 회원이 없습니다.' });
+      }
+    } catch (error) {
+      logger.error('router.user.delete-user.Error', error);
+      res.status(500).json({ error: error.message });
+    }
   }
-});
+);
 
 // Role이 Admin인 사용자가 Role이 User인 사용자의 공장 소속을 변경해줌 최소 1곳에서 여러곳까지 부여 가능
 // (Admin이 User의 공장 소속 변경)
