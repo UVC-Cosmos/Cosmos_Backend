@@ -4,12 +4,11 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import passport from './config/passport.js';
 import session from 'express-session';
-import { connect } from './config/mqttClient.js';
+import { connectMQTT } from './config/mqttClient.js';
 import initializeSocket from './config/socketConfig.js';
 import http from 'http';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
-
 import db from './models/index.js';
 
 import indexRouter from './routes/index.js';
@@ -23,7 +22,7 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-initializeSocket(server);
+const io = initializeSocket(server);
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -47,9 +46,8 @@ db.sequelize
     console.error('db connect fail!', err);
   });
 
-
 // MQTT 서버에 연결
-connect();
+connectMQTT();
 
 // Redis 클라이언트
 const redisClient = createClient({
@@ -57,7 +55,7 @@ const redisClient = createClient({
 });
 
 redisClient.on('connect', () => {
-  console.log('Redis가 정상적으로 연결됨!');
+  console.log('Redis가 성공적으로 연결되었습니다.');
 });
 
 redisClient.on('error', (err) => {
@@ -84,7 +82,7 @@ app.use(
       secure: false, // 배포 환경에서는 secure 속성을 true로 설정하여 HTTPS를 통해서만 쿠키를 전송하도록 합니다.
       httpOnly: false, // JavaScript를 통해 쿠키에 접근하지 못하도록 설정하여 보안을 강화합니다.
       sameSite: 'strict', // CSRF 방지를 위해 SameSite 속성을 'strict'로 설정합니다.
-      maxAge: 1 * 60 * 60 * 1000, // 쿠키의 유효 기간을 1시간으로 설정합니다.
+      maxAge: 1 * 60 * 60 * 1000, // 쿠키의 유효 기간을 24시간(1일)으로 설정합니다.
     },
     unset: 'destroy',
   })
@@ -101,9 +99,8 @@ server.listen(PORT, () => {
   try {
     console.log(`서버가 ${PORT}에서 실행 중 입니다.`);
   } catch (err) {
-
     console.error('서버가 정상적으로 실행이 되지 않습니다.', err);
   }
 });
 
-export { app, redisClient };
+export { app, redisClient, io };
