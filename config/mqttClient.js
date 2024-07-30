@@ -76,6 +76,7 @@ const connectMQTT = () => {
   client.on('error', (err) => {
     console.error('MQTT error:', err);
   });
+
 };
 
 export { connectMQTT, client };

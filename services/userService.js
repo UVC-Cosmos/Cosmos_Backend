@@ -4,6 +4,7 @@ import hashUtil from '../libs/hashUtil.js';
 import sendVerificationEmail from '../services/emailService.js';
 import { setVerifyToken, checkVerifyToken } from '../config/redis.js';
 import crypto from 'crypto';
+import factoryDao from '../dao/factoryDao.js';
 
 const userService = {
   async createUser(params) {
@@ -24,7 +25,6 @@ const userService = {
     };
     try {
       const insert = await userDao.insert(newParams);
-      logger.info('userService.createUser.insert', insert);
       return insert;
     } catch (err) {
       logger.error('Error: userService.createUser.insert', err);
@@ -53,7 +53,6 @@ const userService = {
 
     try {
       const users = await userDao.getAllUsers();
-      console.log('userService.getAllUsers', users);
       return users;
     } catch (error) {
       logger.error('userService.getAllUsers Error', error);
@@ -191,6 +190,114 @@ const userService = {
       logger.error('userService.deleteUser Error', error);
       throw error;
     }
+  },
+
+  async updateUserFactory(params) {
+    logger.info('userService.updateUserFactory', params);
+
+    try {
+      // 1. 사용자가 존재하는지 확인
+      const user = await userDao.getUserById(params);
+      if (!user) {
+        return { success: false, message: '사용자가 존재하지 않습니다.' };
+      }
+
+      // 2. 기존에 사용자가 소속된 공장 정보 초기화
+      await userDao.removeUserFactories(params);
+
+      // 3. 공장 이름으로 공장 ID 조회
+      const getFactoriesId = await factoryDao.getFactoryIdByName(params);
+      const newParams = {
+        id: params.id,
+        factoryIds: getFactoriesId,
+      };
+
+      // 3. 사용자의 새로운 공장 연결 추가
+      const addUserFactories = await userDao.addUserFactories(newParams);
+      if (!addUserFactories) {
+        console.log('addUserFactories', addUserFactories.dataValues);
+      }
+      return addUserFactories;
+    } catch (error) {
+      logger.error('userService.updateUserFactory Error', error);
+      throw error;
+    }
+  },
+
+  // test factories 불러오기
+  async getAllFactories() {
+    try {
+      const result = await factoryDao.getAllFactories();
+      return result;
+    } catch (error) {
+      logger.error('userService.getAllFactories Error', error);
+      throw error;
+    }
+  },
+
+  async getFactoryUsers(factoryId) {
+    logger.info('userService.getFactoryUsers', factoryId);
+    try {
+      const result = await userDao.getFactoryUsers(factoryId);
+      return result;
+    } catch (error) {
+      logger.error('userService.getFactoryUsers Error', error);
+      throw error;
+    }
+  },
+
+  async updateUserLineControl(params) {
+    logger.info('userService.updateUserLineControl', params);
+    // params { id: '2', userId: 1, lines: [ '2', '3' ] }
+
+    // 유효성 검사 id, lines, userId가 존재하는지 배열 비어있는지 확인
+    if (!params.id) {
+      return { success: false, message: '잘못된 요청입니다.' };
+    }
+
+    try {
+      // userId(factoryAdmin)을 통한 admin의 소속 공장 확인
+      const user = await userDao.userInfo(params);
+
+      // 권한 검사 : 사용자 존재하는지, role이 factoryAdmin을 포함하고 있는지 확인
+      if (!user || !user.role.includes('factoryAdmin')) {
+        return { success: false, message: '권한이 없습니다.' };
+      }
+
+      // 역할에 따른 공장 ID 확인 :  사용자의 role에 따라서 관라히는 공장 ID 가져옴
+      const factoryId = this.getFactoryIdByRole(user.role);
+
+      // 유효한 공장 ID인지 확인 : 역할이 유효하지 않다면, 에러 메세지 반환
+      if (!factoryId) {
+        return { success: false, message: '유효하지 않은 역할 입니다.' };
+      }
+
+      const newParams = {
+        id: params.id,
+        lines: params.lines,
+        factoryId: factoryId,
+      };
+
+      // 기존 사용자의 line 정보 초기화 (해당 공장에 대한)
+      await userDao.removeUserLineControl(newParams);
+      // 새로운 line제어 권한 추가: 지정된 라인에 대한 권한 추가
+      await userDao.addUserLinePermission(newParams);
+
+      return true;
+    } catch (error) {
+      logger.error('userService.updateUserLineControl Error', error);
+      throw error;
+    }
+  },
+
+  getFactoryIdByRole(role) {
+    const roleFactoryMap = {
+      'A-factoryAdmin': 1,
+      'B-factoryAdmin': 2,
+      'C-factoryAdmin': 3,
+    };
+
+    return roleFactoryMap[role] || null;
   },
 };
 

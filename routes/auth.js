@@ -8,10 +8,9 @@ import logger from '../libs/logger.js';
 const router = express.Router();
 
 router.post('/login', (req, res, next) => {
-  console.log('auth.login');
-
   // 이미 로그인된 사용자인지 확인
   if (req.isAuthenticated()) {
+    logger.info('Already logged in');
     return res.status(400).json({ message: '이미 로그인된 상태입니다.' });
   }
   logger.info('auth.login.SessionInit', req.session);

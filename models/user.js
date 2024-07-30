@@ -1,24 +1,24 @@
-import { Sequelize } from 'sequelize';
+import Sequelize from 'sequelize';
 
 class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
         userId: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: true,
         },
         password: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(500),
           allowNull: false,
         },
         userName: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
         },
         email: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: true,
           validate: {
@@ -26,8 +26,19 @@ class User extends Sequelize.Model {
           },
         },
         role: {
-          type: Sequelize.ENUM('Admin', 'Operator', 'User'),
+          type: Sequelize.ENUM(
+            'Admin',
+            'A-factoryAdmin',
+            'B-factoryAdmin',
+            'C-factoryAdmin',
+            'User'
+          ),
           defaultValue: 'User',
+        },
+        rank: {
+          type: Sequelize.ENUM('사원', '대리', '과장', '부장'),
+          allowNull: false,
+          defaultValue: '사원',
         },
       },
       {
@@ -37,6 +48,17 @@ class User extends Sequelize.Model {
         paranoid: true, // deletedAt
       }
     );
+  }
+  static associate(models) {
+    this.belongsToMany(models.Factory, {
+      through: models.UserFactory,
+      foreignKey: 'userId',
+      otherKey: 'factoryId',
+    });
+    this.belongsToMany(models.Line, {
+      through: models.UserLinePermission,
+      foreignKey: 'userId',
+    });
   }
 }
 
