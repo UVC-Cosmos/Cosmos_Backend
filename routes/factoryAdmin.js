@@ -24,6 +24,7 @@ router.get(
 
 // 공장 별 사용자 제어 권한 변경
 router.put('/user-line-control/:id', isAuthenticated, async (req, res) => {
+  console.log('req.session', req.session);
   try {
     const params = {
       id: req.params.id, // 변경할 사용자 id

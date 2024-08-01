@@ -65,6 +65,7 @@ const userDao = {
             },
           },
         ],
+        order: [['id', 'ASC']],
       });
       return selectAll;
     } catch (error) {
@@ -179,7 +180,7 @@ const userDao = {
     }
   },
 
-  async addUseusrFactories(params) {
+  async addUserFactories(params) {
     const userFactories = params.factoryIds.map((factoryId) => ({
       userId: params.id,
       factoryId,
