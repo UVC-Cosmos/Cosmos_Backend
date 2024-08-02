@@ -5,6 +5,7 @@ import sendVerificationEmail from '../services/emailService.js';
 import { setVerifyToken, checkVerifyToken } from '../config/redis.js';
 import crypto from 'crypto';
 import factoryDao from '../dao/factoryDao.js';
+import loginLogDao from '../dao/loginLogDao.js';
 
 const userService = {
   async createUser(params) {
@@ -34,17 +35,42 @@ const userService = {
 
   async login(params) {
     logger.info('userService.login', params);
+    const user = await userDao.userLogin(params);
 
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
+
+    const passwordCheck = await hashUtil.checkPasswordHash(
+      params.password,
+      user.password
+    );
+    if (!passwordCheck) {
+      throw new Error('비밀번호가 일치하지 않습니다.');
+    }
+
+    // 로그인 성공 후 추가적인 비즈니스 log 처리
+    await loginLogDao.createLoginLog({
+      userId: user.id,
+      action: 'login',
+    });
+
+    return user;
+  },
+
+  async logout(params) {
     try {
-      const user = await userDao.userLogin(params);
+      const user = await userDao.selectUser(params);
 
-      if (!user) {
-        const err = new Error('User not found');
-        return err;
-      }
-    } catch (err) {
-      logger.error('Error: userService.login.userLogin', err);
-      throw err;
+      await loginLogDao.createLoginLog({
+        userId: user.id,
+        action: 'logout',
+      });
+
+      return user;
+    } catch (error) {
+      logger.error('userService.logout Error', error);
+      throw error;
     }
   },
 

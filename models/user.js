@@ -64,6 +64,9 @@ class User extends Sequelize.Model {
       through: models.UserLinePermission,
       foreignKey: 'userId',
     });
+    this.hasMany(models.LoginLog, {
+      foreignKey: 'userId',
+    });
   }
 }
 
