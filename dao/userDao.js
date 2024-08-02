@@ -234,6 +234,7 @@ const userDao = {
           },
         },
       ],
+      order: [['id', 'ASC']],
     });
   },
 
