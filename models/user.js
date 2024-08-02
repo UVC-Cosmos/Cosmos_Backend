@@ -55,6 +55,11 @@ class User extends Sequelize.Model {
       foreignKey: 'userId',
       otherKey: 'factoryId',
     });
+    this.belongsToMany(models.Notification, {
+      through: models.UserNotification,
+      foreignKey: 'userId',
+      otherKey: 'notificationId',
+    });
     this.belongsToMany(models.Line, {
       through: models.UserLinePermission,
       foreignKey: 'userId',

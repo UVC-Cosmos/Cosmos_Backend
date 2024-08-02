@@ -1,19 +1,16 @@
 import express from 'express';
 import logger from '../libs/logger.js';
 import historyService from '../services/historyService.js';
+import { isAuthenticated } from '../middlewares/index.js';
 
 const router = express.Router();
 
-router.get('/:date', async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   logger.info('router.history - ');
-  console.log('🚀 ~ router.get ~ req.params.date:', req.params.date);
 
-  // if (!req.session.id) {
-  //   return res.status(401).json({ message: '로그인이 필요합니다.' });
-  // }
   try {
     const params = {
-      date: req.params.date,
+      userId: req.user.id,
     };
     const result = await historyService.getHistoryData(params);
     console.log(result);

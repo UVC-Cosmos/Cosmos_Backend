@@ -1,6 +1,9 @@
 // socketConfig.js
 import { Server } from 'socket.io';
-
+import {
+  addUserConnection,
+  removeUserConnection,
+} from '../libs/socketEvent.js';
 const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
@@ -15,6 +18,13 @@ const initializeSocket = (server) => {
 
     socket.on('disconnect', () => {
       console.log('user disconnected');
+      removeUserConnection(socket.id);
+    });
+
+    // 사용자 ID를 받아와서 저장
+    socket.on('register', (userId) => {
+      addUserConnection(socket.id, userId);
+      console.log(`User ${userId} registered with socket ID ${socket.id}`);
     });
 
     socket.on('create', (edukitID, data) => {
@@ -39,6 +49,14 @@ const initializeSocket = (server) => {
       console.error('Socket.IO 에러 발생:', err);
     });
 
+    // socket.on('sendToUser', (userId, message) => {
+    //   for (const [socketId, id] of userSockets.entries()) {
+    //     if (id === userId) {
+    //       io.to(socketId).emit('privateMessage', message);
+    //       break;
+    //     }
+    //   }
+    // });
     console.log('WebSocket server initialized');
   });
 
