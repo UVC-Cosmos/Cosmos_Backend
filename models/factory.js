@@ -28,6 +28,7 @@ class Factory extends Sequelize.Model {
       otherKey: 'userId',
     });
     this.hasMany(models.Line, { foreignKey: 'factoryId' });
+    this.hasMany(models.Notification, { foreignKey: 'factoryId' });
   }
 }
 

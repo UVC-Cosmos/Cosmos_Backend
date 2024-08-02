@@ -9,7 +9,6 @@ let client;
 
 // 기존 값들을 저장할 객체
 const previousValues = {};
-let initCount = 0;
 
 const connectMQTT = () => {
   client = mqtt.connect(MQTT_BROKER_URL);
@@ -30,25 +29,18 @@ const connectMQTT = () => {
     try {
       const data = JSON.parse(message.toString());
 
-      const tagId1ItemStart = data.find(
-        (item) => item.tagId === '1' && item.value === true
-      );
-      const tagId1ItemStop = data.find(
-        (item) => item.tagId === '1' && item.value === false
-      );
-      if (!tagId1ItemStart) return;
-      if (tagId1ItemStop && initCount === 1) initCount = 0;
-
       const relevantTagIds = [
-        '2',
-        '8',
-        '15',
-        '16',
-        '17',
-        '25',
-        '35',
-        '37',
-        '38',
+        '2', // No1ChipEmpty
+        '8', // ResetState
+        '15', // No1Count
+        '16', // No2Count
+        '17', // No3Count
+        '25', // No2CubeFull
+        '35', // EmergencyState
+        '36', // InputLimit
+        '37', // DiceValue
+        '38', // DiceComparisonValue
+        '44', // No3FullCount
       ];
       data.forEach((item) => {
         const { tagId, name, value } = item;
@@ -56,18 +48,13 @@ const connectMQTT = () => {
         if (relevantTagIds.includes(tagId)) {
           if (previousValues[tagId] !== value) {
             console.log(`tagId: ${tagId}, name: ${name}, value: ${value}`);
-            previousValues[tagId] = value;
-            if (initCount === 1) {
-              console.log('🚀 ~ data.forEach ~ processTagData:');
-              processTagData(tagId, value); // InfluxDB 처리 함수 호출
+            if (previousValues[tagId] !== undefined) {
+              processTagData(tagId, value, previousValues); // InfluxDB 처리 함수 호출
             }
+            previousValues[tagId] = value;
           }
         }
       });
-      if (initCount === 0) {
-        initCount = 1;
-        return;
-      }
     } catch (error) {
       console.error('Failed to process message:', error);
     }
@@ -76,7 +63,6 @@ const connectMQTT = () => {
   client.on('error', (err) => {
     console.error('MQTT error:', err);
   });
-
 };
 
 export { connectMQTT, client };

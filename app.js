@@ -1,3 +1,4 @@
+//app.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -7,10 +8,9 @@ import session from 'express-session';
 import { connectMQTT } from './config/mqttClient.js';
 import initializeSocket from './config/socketConfig.js';
 import http from 'http';
+import db from './models/index.js';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
-import db from './models/index.js';
-
 import indexRouter from './routes/index.js';
 
 const corsOptions = {
@@ -36,7 +36,36 @@ db.sequelize
     db.sequelize
       .sync({ alter: true })
       .then(async () => {
-        console.log('DB connection has been established successfully');
+        console.log('DB sync has been established successfully');
+        // 기존의 유니크 제약 조건 제거
+        const queryInterface = db.sequelize.getQueryInterface();
+        // user_notifications 테이블의 모든 제약 조건 가져오기
+        const constraints = await queryInterface.showConstraint(
+          'user_notifications'
+        );
+
+        // 특정 제약 조건이 있는지 확인
+        const constraintExists = constraints.some(
+          (constraint) =>
+            constraint.constraintName ===
+            'user_notifications_userId_notificationId_key'
+        );
+
+        if (constraintExists) {
+          await queryInterface
+            .removeConstraint(
+              'user_notifications',
+              'user_notifications_userId_notificationId_key'
+            )
+            .then(() => {
+              console.log('Unique constraint removed successfully');
+            })
+            .catch((err) => {
+              console.error('Failed to remove unique constraint', err);
+            });
+        } else {
+          console.log('Constraint does not exist');
+        }
       })
       .catch((err) => {
         console.error('db sync error', err);

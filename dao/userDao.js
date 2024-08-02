@@ -238,6 +238,15 @@ const userDao = {
     });
   },
 
+  async getFactoryUsersForNotification(factoryId) {
+    console.log('userDao.getFactoryUsersForNotification', factoryId);
+    return await User.findAll({
+      where: {
+        role: 'User',
+      },
+    });
+  },
+
   // 기존의 제어 권한 삭제
   async removeUserLineControl(params) {
     try {
