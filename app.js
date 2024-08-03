@@ -124,7 +124,7 @@ app.use('/', indexRouter);
 
 const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, () => {
   try {
     console.log(`서버가 http://127.0.0.1:${PORT}에서 실행 중 입니다.`);
   } catch (err) {
