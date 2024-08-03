@@ -30,7 +30,14 @@ const processTagData = async (tagId, value, previousValues) => {
       .intField('count', 1)
       .timestamp(currentTime);
     writeApi.writePoint(point);
-    if (value >= previousValues['36']) {
+    if (parseInt(value) >= parseInt(previousValues['36'])) {
+      console.log(
+        '🚀 ~ processTagData ~ value >= previousValues:',
+        value,
+        typeof value,
+        previousValues,
+        typeof previousValues
+      );
       // 목표생산량 도달 알림 로직
       const notifications = await notificationService.addNotifications(6);
       notifications.forEach((notification) => {
@@ -52,9 +59,12 @@ const processTagData = async (tagId, value, previousValues) => {
       .intField('count', 1)
       .timestamp(currentTime);
     writeApi.writePoint(point);
-    if (value % 10 === 0) {
+    if (parseInt(previousValues['15']) % 10 === 0) {
       // 10번째 생산때마다 1호기 불량률 체크 알림 로직
-      const defectRate = ((value - previousValues['15']) / value) * 100;
+      const defectRate =
+        ((parseInt(previousValues['15']) - parseInt(value)) /
+          parseInt(previousValues['15'])) *
+        100;
       console.log('🚀 ~ 1호기 processTagData ~ defectRate:', defectRate);
       if (defectRate >= 20) {
         const notifications = await notificationService.addNotifications(7);
@@ -78,9 +88,12 @@ const processTagData = async (tagId, value, previousValues) => {
       .intField('count', 1)
       .timestamp(currentTime);
     writeApi.writePoint(point);
-    if (value % 10 === 0) {
+    if (parseInt(previousValues['16']) % 10 === 0) {
       // 10번째 생산때마다 2호기 불량률 체크 알림 로직
-      const defectRate = ((value - previousValues['16']) / value) * 100;
+      const defectRate =
+        ((parseInt(previousValues['15']) - parseInt(value)) /
+          parseInt(previousValues['15'])) *
+        100;
       console.log('🚀 ~ 2호기 processTagData ~ defectRate:', defectRate);
       if (defectRate >= 20) {
         const notifications = await notificationService.addNotifications(9);
