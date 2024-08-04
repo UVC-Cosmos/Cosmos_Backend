@@ -7,6 +7,7 @@ const factoryDao = {
     try {
       const result = await Factory.findAll({
         where: { id: params.factoryIds },
+        order: [['id', 'DESC']],
       });
 
       return result;

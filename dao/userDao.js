@@ -30,6 +30,7 @@ const userDao = {
             through: {
               attributes: [],
             },
+            order: [['id', 'ASC']],
           },
           {
             model: Line,
@@ -63,6 +64,7 @@ const userDao = {
               model: UserFactory,
               attributes: [],
             },
+            order: [['id', 'ASC']],
           },
         ],
         order: [['id', 'ASC']],

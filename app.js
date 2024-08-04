@@ -126,7 +126,7 @@ const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   try {
-    console.log(`서버가 http://127.0.0.1:${PORT}에서 실행 중 입니다.`);
+    console.log(`서버가 http://localhost:${PORT}에서 실행 중 입니다.`);
   } catch (err) {
     console.error('서버가 정상적으로 실행이 되지 않습니다.', err);
   }
