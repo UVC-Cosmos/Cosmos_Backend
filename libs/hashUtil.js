@@ -7,6 +7,7 @@ const hashUtil = {
   makeHashPassword(password) {
     return new Promise((resolve, reject) => {
       if(!password) {
+        // console.log(password);
         reject(new Error('비밀번호가 일치하지 않습니다. 다시 확인해주세요.'));
       }
 
@@ -29,7 +30,7 @@ const hashUtil = {
   },
   // 비밀번호 확인
   checkPasswordHash(password, encryptedPassword) {
-    console.log("🚀 ~ checkPasswordHash ~ password, encryptedPassword:", password, encryptedPassword)
+    // console.log("🚀 ~ checkPasswordHash ~ password, encryptedPassword:", password, encryptedPassword)
     
     return new Promise((resolve, reject) => {
       if (!password || !encryptedPassword) {
@@ -47,7 +48,7 @@ const hashUtil = {
 
         const hash = derivedKey.toString('hex');
         
-        console.log("🚀 ~ crypto.pbkdf2 ~ hash === encryptedHash:", hash === encryptedHash)
+        // console.log("🚀 ~ crypto.pbkdf2 ~ hash === encryptedHash:", hash === encryptedHash)
         // 입력된 password와 암호화된 password를 비교한다.
         if (hash === encryptedHash) {
           resolve(true);
